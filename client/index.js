@@ -114,8 +114,8 @@ if (!('webkitSpeechRecognition' in window)) {
     }
     final_transcript = capitalize(final_transcript)
     const translatedText = getTranslation(interim_transcript)
-    if (translatedText) translated_span.innerHTML = translatedText
     if (final_transcript) getTranslation(final_transcript)
+    if (translatedText) translated_span.innerHTML = translatedText
     translated_span.innerHTML = getTranslation(final_transcript)
     final_span.innerHTML = linebreak(final_transcript)
     interim_span.innerHTML = linebreak(interim_transcript)
