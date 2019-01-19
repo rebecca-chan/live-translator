@@ -16,9 +16,9 @@ const createApp = () => {
   app.use(express.static(path.join(__dirname, '..', 'public')))
 
   //send everthing ot index.html
-  app.use('*', (req, res) => {
-    res.sendFile(path.join(__dirname, '..', 'public/index.html'))
-  })
+  // app.use('*', (req, res) => {
+  //   res.sendFile(path.join(__dirname, '..', 'public/index.html'))
+  // })
 
   // compression middleware
   app.use(compression())
