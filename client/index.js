@@ -1,6 +1,8 @@
+const recognition = new webkitSpeechRecognition()
+const synth = window.speechSynthesis
 const langs = require('./webspeechLangs')
 const outputLanguages = require('./translationLangs')
-const API_KEY = require('../secrets')
+const API_KEY = require('../secrets.js')
 
 for (let i = 0; i < outputLanguages.length; i++) {
   output_language.options[i] = new Option(
@@ -18,10 +20,13 @@ const getTranslation = async final_transcript => {
   translated_span.innerHTML = data.translations[0].translatedText
 }
 
-//creates options for every input language in webSpeech API
 for (let i = 0; i < langs.length; i++) {
   select_language.options[i] = new Option(langs[i][0], i)
 }
+select_language.addEventListener('change', () => {
+  updateCountry()
+})
+//this sets the default lang to English, updates the options, then sets the default dialect to US
 select_language.selectedIndex = 6
 updateCountry()
 select_dialect.selectedIndex = 6
@@ -29,10 +34,12 @@ showInfo('info_start')
 
 //allows you to select country based on selected language
 function updateCountry() {
+  //this removes all the dialects at the beginning of the language onchange
   for (var i = select_dialect.options.length - 1; i >= 0; i--) {
     select_dialect.remove(i)
   }
   var list = langs[select_language.selectedIndex]
+  //this creates dialect options for the selected language if language.length is greater than 1
   for (var i = 1; i < list.length; i++) {
     select_dialect.options.add(new Option(list[i][1], list[i][0]))
   }
@@ -47,7 +54,6 @@ if (!('webkitSpeechRecognition' in window)) {
   upgrade()
 } else {
   start_button.style.display = 'inline-block'
-  var recognition = new webkitSpeechRecognition()
   recognition.continuous = true
   recognition.interimResults = true
 
@@ -108,7 +114,6 @@ if (!('webkitSpeechRecognition' in window)) {
     }
     final_transcript = capitalize(final_transcript)
     const translatedText = getTranslation(interim_transcript)
-    console.log('translatedText', translatedText)
     if (translatedText) translated_span.innerHTML = translatedText
     if (final_transcript) getTranslation(final_transcript)
     translated_span.innerHTML = getTranslation(final_transcript)
@@ -148,7 +153,6 @@ document.getElementById('start_button').addEventListener('click', () => {
   interim_span.innerHTML = ''
   start_img.src = 'recording_nopause.gif'
   showInfo('info_allow')
-  showButtons('none')
   start_timestamp = event.timeStamp
 })
 
@@ -165,10 +169,71 @@ function showInfo(s) {
   }
 }
 
-var current_style
-function showButtons(style) {
-  if (style == current_style) {
+//fun speech synthesis stuff here
+
+let voices = []
+
+const getVoices = () => {
+  voices = synth.getVoices()
+}
+getVoices()
+if (synth.onvoiceschanged !== undefined) {
+  synth.onvoiceschanged = getVoices
+}
+
+output_language.addEventListener('change', () => {
+  updateSpeaker()
+})
+
+function updateSpeaker() {
+  for (var i = spoken_language.options.length - 1; i >= 0; i--) {
+    spoken_language.remove(i)
+  }
+  for (let i = 0; i < voices.length; i++) {
+    let currentVoice = voices[i].lang
+    console.log(currentVoice, 'current voice')
+    console.log(output_language.value, 'output value')
+    if (currentVoice.startsWith(output_language.value)) {
+      spoken_language.options.add(
+        new Option(
+          `${voices[i].name} (${voices[i].lang})`,
+          voices[i].name //value
+        )
+      )
+    }
+  }
+}
+
+spoken_language.addEventListener('change', () => speak())
+//speak!
+
+const speak = () => {
+  // Check if speaking
+  if (synth.speaking) {
+    console.error('Already speaking...')
     return
   }
-  current_style = style
+  if (translated_span.innerHTML !== '') {
+    // Get speak text
+    const speakText = new SpeechSynthesisUtterance(translated_span.innerHTML)
+
+    // Speak end
+    speakText.onend = e => {
+      console.log('Done speaking...')
+    }
+
+    // Speak error
+    speakText.onerror = e => {
+      console.error('Something went wrong')
+    }
+
+    // Loop through voices
+    voices.forEach(voice => {
+      if (voice.name === spoken_language.value) {
+        speakText.voice = voice
+      }
+    })
+
+    synth.speak(speakText)
+  }
 }
