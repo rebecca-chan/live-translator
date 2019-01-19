@@ -18,10 +18,6 @@ const createApp = () => {
 
   app.use(express.static(path.join(__dirname, '..', 'public')))
 
-  app.use('/bundle.js', (req, res) => {
-    res.sendFile(path.join(__dirname, '..', 'public/bundle.js'))
-  })
-
   app.use((req, res, next) => {
     if (path.extname(req.path).length) {
       const err = new Error('Not found')
