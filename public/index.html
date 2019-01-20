@@ -1,24 +1,41 @@
 <!DOCTYPE html> <meta charset="utf-8" /> <title>talkwerk</title>
 <head>
   <link rel="stylesheet" type="text/css" href="style.css" />
-  <script defer src="bundle.js"></script>
+  <link href="https://fonts.googleapis.com/css?family=Muli" rel="stylesheet" />
+  <script defer src="./bundle.js"></script>
 </head>
 
-<h1 class="center" id="headline">talkwerk</h1>
+<h1 class="center" id="headline">talkwords</h1>
+<p class="center">a sweet translation app</p>
 <div class="center">
-  <p>Select Your Input Language</p>
-  <div id="div_language">
-    <select id="select_language"></select>
-    &nbsp;&nbsp;
-    <select id="select_dialect"></select>
+  <div class="sidebyside">
+    <p>Select Your Input Language</p>
+    <div id="div_language">
+      <select id="select_language"></select>
+      &nbsp;&nbsp;
+      <select id="select_dialect"></select>
+    </div>
+    <div id="results">
+        <span id="final_span" class="final"></span>
+        <span id="interim_span" class="interim"></span>
+        <p></p>
+      </div>
+  </div>
+  <div class="sidebyside">
+    <p>Select Your Output Language</p>
+    <div id="translate_language">
+      <select id="output_language"></select>
+      &nbsp;&nbsp;
+      <select id="spoken_language"> <option selected="selected">Select Voice</option></select>
+      &nbsp;&nbsp;
+   <button id="play_button">Play Translation</button>
+</div>
+    <div id="translation">
+        <span id="translated_span" class="final"></span>
+        <p></p>
+      </div>
   </div>
 
-  <p>Select Your Output Language</p>
-  <div id="translate_language">
-    <select id="output_language"></select>
-    &nbsp;&nbsp;
-    <select id="spoken_language"></select>
-  </div>
   <div id="info">
     <p id="info_start">Tap to begin recording.</p>
     <p id="info_speak_now">Speak now.</p>
@@ -53,21 +70,13 @@
     </p>
   </div>
 
-  <div class="center">
     <div class="container">
       <button id="start_button">
         <img id="start_img" src="recording.png" alt="Start" />
       </button>
     </div>
-    <div id="results">
-      <span id="final_span" class="final"></span>
-      <span id="interim_span" class="interim"></span>
-      <p></p>
-    </div>
+
   </div>
 
-  <div id="translation">
-    <span id="translated_span" class="final"></span>
-    <p></p>
-  </div>
+
 </div>

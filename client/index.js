@@ -14,7 +14,6 @@ for (let i = 0; i < outputLanguages.length; i++) {
 const getTranslation = async final_transcript => {
   let targetLang = output_language.value
   const uri = `https://translation.googleapis.com/language/translate/v2?target=${targetLang}&key=${API_KEY}&q=${final_transcript}`
-  console.log(targetLang, 'targetLang')
   const response = await fetch(uri)
   const {data} = await response.json()
   translated_span.innerHTML = data.translations[0].translatedText
@@ -183,6 +182,7 @@ if (synth.onvoiceschanged !== undefined) {
 
 output_language.addEventListener('change', () => {
   updateSpeaker()
+  translated_span.innerHTML = getTranslation(final_transcript)
 })
 
 function updateSpeaker() {
@@ -191,8 +191,6 @@ function updateSpeaker() {
   }
   for (let i = 0; i < voices.length; i++) {
     let currentVoice = voices[i].lang
-    console.log(currentVoice, 'current voice')
-    console.log(output_language.value, 'output value')
     if (currentVoice.startsWith(output_language.value)) {
       spoken_language.options.add(
         new Option(
@@ -204,13 +202,11 @@ function updateSpeaker() {
   }
 }
 
-spoken_language.addEventListener('change', () => speak())
-//speak!
+play_button.addEventListener('click', () => speak())
 
 const speak = () => {
   // Check if speaking
   if (synth.speaking) {
-    console.error('Already speaking...')
     return
   }
   if (translated_span.innerHTML !== '') {
@@ -218,18 +214,19 @@ const speak = () => {
     const speakText = new SpeechSynthesisUtterance(translated_span.innerHTML)
 
     // Speak end
-    speakText.onend = e => {
-      console.log('Done speaking...')
+    speakText.onend = () => {
+      console.log('Synthesis stopped recording')
     }
 
     // Speak error
-    speakText.onerror = e => {
+    speakText.onerror = () => {
       console.error('Something went wrong')
     }
 
     // Loop through voices
     voices.forEach(voice => {
       if (voice.name === spoken_language.value) {
+        console.log(spoken_language.value, 'spoken selected')
         speakText.voice = voice
       }
     })
